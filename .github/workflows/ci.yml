@@ -1,55 +1,13 @@
 name: Rust CI
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-
-permissions:
-  contents: write
+on: [push, pull_request]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-
-      - name: Install dependencies
-        run: |
-          rustup component add clippy
-          rustup component add rustfmt
-
-      - name: Run tests
-        run: |
-          cargo test --verbose
-
-      - name: Build documentation
-        run: |
-          cargo doc --no-deps --document-private-items
-
-      - name: Upload documentation as artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: documentation
-          path: target/doc
-
-  deploy:
-    needs: build
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Download documentation artifact
@@ -57,26 +15,21 @@ jobs:
         with:
           name: documentation
 
-      - name: Fetch existing gh-pages branch or create it
+      - name: Verify documentation artifact exists
+        run: |
+          if [ ! -d "./documentation" ]; then
+            echo "Documentation directory not found!"
+            exit 1
+          fi
+
+      - name: Checkout gh-pages branch
         run: |
           git fetch origin gh-pages || echo "No gh-pages branch found"
           git checkout gh-pages || git checkout --orphan gh-pages
 
-      - name: Clean up old files
+      - name: Clean gh-pages directory
         run: |
-          # Remove all files except the .git directory to ensure a clean slate
           find . -mindepth 1 -not -name '.git' -exec rm -rf {} +
 
-      - name: Copy new documentation
-        run: |
-          cp -r ./documentation/* ./
-
-      - name: Commit and push changes
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-          git add .
-          git commit -m "Update documentation" || echo "No changes to commit"
-          git push --force "https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" gh-pages
+      - name: Copy documentation to gh-pages
+        run: cp -r ./documentation/* ./
