@@ -69,7 +69,7 @@ jobs:
 
       - name: Copy new documentation
         run: |
-          cp -r documentation/* ./
+          cp -r ./documentation/* ./
 
       - name: Commit and push changes
         env:
