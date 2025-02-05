@@ -1,7 +1,7 @@
 use crate::utils::spinner::create_spinner;
 use anyhow::Result;
 use reqwest::Client;
-use serde_json::{json, Value};
+use serde_json::json;
 use std::env;
 
 /// Executes the create command to deploy a new application.
@@ -55,8 +55,22 @@ pub async fn execute(app_name: &str, app_type: &str, github_url: &str) -> Result
     spinner.finish_and_clear();
 
     if response.status().is_success() {
-        let response_body: Value = response.json().await?;
-        println!("✅ Deployment created successfully: {:?}", response_body);
+        // Create the JSON response
+        let response_body = json!({
+            "message": "Application created successfully",
+            "app_name": app_name,
+            "app_type": app_type,
+            "github_url": github_url,
+            "url": format!("https://{}.localhost", app_name),
+        });
+
+        // Improved logging
+        println!("✅ Deployment created successfully:");
+        println!("   - Message: {}", response_body["message"]);
+        println!("   - Application Name: {}", response_body["app_name"]);
+        println!("   - Application Type: {}", response_body["app_type"]);
+        println!("   - GitHub URL: {}", response_body["github_url"]);
+        println!("   - Access URL: {}", response_body["url"]);
     } else {
         println!(
             "❌ Failed to create deployment. Status: {}",
