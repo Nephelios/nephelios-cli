@@ -2,6 +2,7 @@ use crate::utils::spinner::create_spinner;
 use anyhow::Result;
 use reqwest::Client;
 use serde_json::{json, Value};
+use std::env;
 
 /// Executes the create command to deploy a new application.
 ///
@@ -27,7 +28,14 @@ use serde_json::{json, Value};
 /// ```
 pub async fn execute(app_name: &str, app_type: &str, github_url: &str) -> Result<()> {
     let client = Client::new();
+    dotenv::dotenv().ok();
 
+    let nephelios_port: u16 = env::var("NEPHELIOS_PORT")
+        .unwrap_or_else(|_| "3030".to_string())
+        .parse()
+        .unwrap_or(3030);
+    let nephelios_url =
+        env::var("NEPHELIOS_URL").unwrap_or_else(|_| "http://localhost".to_string());
     let spinner = create_spinner(&format!("Deploying {} application...", app_name));
 
     let payload = json!({
@@ -37,7 +45,7 @@ pub async fn execute(app_name: &str, app_type: &str, github_url: &str) -> Result
     });
 
     let response = client
-        .post("http://127.0.0.1:3030/create")
+        .post(format!("{}:{}/create", nephelios_url, nephelios_port))
         .header("Content-Type", "application/json")
         .json(&payload)
         .send()
