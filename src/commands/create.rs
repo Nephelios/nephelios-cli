@@ -1,7 +1,7 @@
 use crate::utils::spinner::create_spinner;
 use anyhow::Result;
 use reqwest::Client;
-use serde_json::{json, Value};
+use serde_json::json;
 use std::env;
 
 /// Executes the create command to deploy a new application.
