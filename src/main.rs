@@ -23,6 +23,12 @@ async fn main() -> anyhow::Result<()> {
             github_url,
         } => {
             commands::create::execute(name, type_, github_url).await?;
+        },
+
+        Commands::Remove {
+            name,
+        } => {
+            commands::remove::execute(name).await?;
         }
     }
 

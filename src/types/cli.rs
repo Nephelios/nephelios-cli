@@ -49,4 +49,11 @@ pub enum Commands {
         )]
         github_url: String,
     },
+
+    Remove {
+
+        /// Name of the application (e.g., my-awesome-app)
+        #[arg(long, help = "Name of the application to deploy")]
+        name: String,
+    },
 }
