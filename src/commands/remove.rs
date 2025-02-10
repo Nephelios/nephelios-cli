@@ -5,6 +5,19 @@ use serde_json::json;
 use std::env;
 
 
+
+
+/// Executes the remove command to delete an application.
+///
+/// # Arguments
+///
+/// * `app_name` - The name of the application to remove.
+///
+/// # Returns
+///
+/// * `Ok(())` if the removal was successful.
+/// * `Err(anyhow::Error)` if there was an error during removal
+
 pub async fn execute(app_name: &str) -> Result<()> {
 
     let client = Client::new();
