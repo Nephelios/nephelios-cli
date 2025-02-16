@@ -29,7 +29,20 @@ async fn main() -> anyhow::Result<()> {
             name,
         } => {
             commands::remove::execute(name).await?;
+        },
+
+        Commands::Stop {
+            name,
+        } => {
+            commands::stop::execute(name).await?;
+        },
+
+        Commands::Start {
+            name,
+        } => {
+            commands::start::execute(name).await?;
         }
+
     }
 
     Ok(())

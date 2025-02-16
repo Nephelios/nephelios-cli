@@ -57,7 +57,21 @@ pub enum Commands {
     Remove {
 
         /// Name of the application (e.g., my-awesome-app)
-        #[arg(long, help = "Name of the application to deploy")]
+        #[arg(long, help = "Name of the application to remove")]
+        name: String,
+    },
+
+    Start {
+
+        /// Name of the application (e.g., my-awesome-app)
+        #[arg(long, help = "Name of the application to start")]
+        name: String,
+    },
+
+    Stop {
+
+        /// Name of the application (e.g., my-awesome-app)
+        #[arg(long, help = "Name of the application to stop")]
         name: String,
     },
 }
