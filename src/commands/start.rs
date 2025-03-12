@@ -29,7 +29,7 @@ pub async fn execute(app_name: &str) -> Result<()> {
         .unwrap_or(3030);
     let nephelios_url =
         env::var("NEPHELIOS_URL").unwrap_or_else(|_| "http://localhost".to_string());
-    let spinner = create_spinner(&format!("Stoping {} application...", app_name));
+    let spinner = create_spinner(&format!("Starting {} application...", app_name));
 
     let payload = json!({
         "app_name": app_name,
