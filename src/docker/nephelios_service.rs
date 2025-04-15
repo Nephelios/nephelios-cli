@@ -200,6 +200,17 @@ impl NepheliosService {
 
                     binds
                 }),
+                port_bindings: Some({
+                    let mut port_bindings = HashMap::new();
+                    port_bindings.insert(
+                        self.exposed_port.clone(),
+                        Some(vec![bollard::service::PortBinding {
+                            host_ip: Some("0.0.0.0".to_string()),
+                            host_port: Some(self.exposed_port.clone()),
+                        }]),
+                    );
+                    port_bindings
+                }),
                 ..Default::default()
             }),
             labels: Some({
@@ -210,7 +221,10 @@ impl NepheliosService {
                 labels
             }),
             env: Some(self.env.clone()),
-            exposed_ports: Some(HashMap::from([(self.exposed_port.clone(), HashMap::new())])),
+            exposed_ports: Some(HashMap::from([
+                (format!("{}/tcp", self.exposed_port.clone()), HashMap::new()),
+                (format!("{}/udp", self.exposed_port.clone()), HashMap::new()),
+            ])),
             ..Default::default()
         };
 
