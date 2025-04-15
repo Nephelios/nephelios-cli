@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::docker::nephelios_service::NepheliosService;
 use anyhow::Result;
 use bollard::Docker;
@@ -6,7 +8,8 @@ pub async fn execute() -> Result<(), anyhow::Error> {
     let docker = Docker::connect_with_local_defaults();
     match docker {
         Ok(docker) => {
-            let nephelios_service: NepheliosService = NepheliosService::new(docker, vec![]);
+            let nephelios_service: NepheliosService =
+                NepheliosService::new(docker, Some("3030/tcp".to_string()), Some(HashMap::new()));
 
             if !nephelios_service.is_nephelios_running().await {
                 if !nephelios_service.is_nephelios_stopped().await {

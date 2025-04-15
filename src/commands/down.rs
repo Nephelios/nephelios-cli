@@ -5,7 +5,7 @@ pub async fn execute() -> Result<(), anyhow::Error> {
     let docker = Docker::connect_with_local_defaults();
     match docker {
         Ok(docker) => {
-            let nephelios_service: NepheliosService = NepheliosService::new(docker, vec![]);
+            let nephelios_service: NepheliosService = NepheliosService::new(docker, None, None);
             match nephelios_service.stop().await {
                 Ok(_) => {
                     println!("Nephelios stopped successfully");

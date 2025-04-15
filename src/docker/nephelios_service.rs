@@ -16,10 +16,17 @@ pub struct NepheliosService {
     pub image: String,
     pub socket: String,
     pub volumes: Vec<NepheliosVolume>,
+    pub exposed_port: String,
+    pub env: Vec<String>,
 }
 
 impl NepheliosService {
-    pub fn new(docker: Docker, volumes: Vec<NepheliosVolume>) -> Self {
+    pub fn new(
+        docker: Docker,
+        exposed_port: Option<String>,
+        env: Option<HashMap<String, String>>,
+    ) -> Self {
+        let port = exposed_port.map_or("3030".to_string(), |v| v.clone());
         Self {
             docker,
             name: "nephelios".to_string(),
@@ -53,6 +60,28 @@ impl NepheliosService {
                     },
                 ];
                 volumes
+            },
+            exposed_port: port.clone(),
+            env: {
+                let mut neph_env: Vec<String> = vec![];
+
+                if let Some(env) = env {
+                    neph_env.push(format!("NEPHELIOS_PORT={}", port));
+                    neph_env.push(format!(
+                        "NEPHELIOS_APPS_PORT={}",
+                        env.get("NEPHELIOS_APPS_PORT").map_or("5173", |v| v)
+                    ));
+                    neph_env.push(format!(
+                        "LEAVE_SWARM={}",
+                        env.get("LEAVE_SWARM").map_or("false", |v| v)
+                    ));
+                    neph_env.push(format!(
+                        "ADVERTISE_ADDR={}",
+                        env.get("ADVERTISE_ADDR",).map_or("127.0.0.1", |v| v)
+                    ));
+                }
+
+                neph_env
             },
         }
     }
@@ -180,6 +209,8 @@ impl NepheliosService {
                 labels.insert(label.clone(), label);
                 labels
             }),
+            env: Some(self.env.clone()),
+            exposed_ports: Some(HashMap::from([(self.exposed_port.clone(), HashMap::new())])),
             ..Default::default()
         };
 
