@@ -1,4 +1,5 @@
 mod commands;
+mod docker;
 mod types;
 mod utils;
 
@@ -23,26 +24,27 @@ async fn main() -> anyhow::Result<()> {
             github_url,
         } => {
             commands::create::execute(name, type_, github_url).await?;
-        },
+        }
 
-        Commands::Remove {
-            name,
-        } => {
+        Commands::Remove { name } => {
             commands::remove::execute(name).await?;
-        },
+        }
 
-        Commands::Stop {
-            name,
-        } => {
+        Commands::Stop { name } => {
             commands::stop::execute(name).await?;
-        },
+        }
 
-        Commands::Start {
-            name,
-        } => {
+        Commands::Start { name } => {
             commands::start::execute(name).await?;
         }
 
+        Commands::Up {} => {
+            commands::up::execute().await?;
+        }
+
+        Commands::Down {} => {
+            commands::down::execute().await?;
+        }
     }
 
     Ok(())

@@ -8,7 +8,7 @@ use clap::{Parser, Subcommand};
 #[command(
     name = "nephelios-cli",
     author = "Your Name <your.email@example.com>",
-    version = "1.0.0",
+    version = env!("CARGO_PKG_VERSION"),
     about = "Nephelios CLI tool for managing application deployments",
     long_about = "A command-line interface for managing your Nephelios deployments. Supports creating new deployments, \
                   managing existing ones, and deploying applications from GitHub repositories."
@@ -55,23 +55,24 @@ pub enum Commands {
     /// This command deletes an existing application from the Nephelios platform.
     /// It requires the application name.
     Remove {
-
         /// Name of the application (e.g., my-awesome-app)
         #[arg(long, help = "Name of the application to remove")]
         name: String,
     },
 
     Start {
-
         /// Name of the application (e.g., my-awesome-app)
         #[arg(long, help = "Name of the application to start")]
         name: String,
     },
 
     Stop {
-
         /// Name of the application (e.g., my-awesome-app)
         #[arg(long, help = "Name of the application to stop")]
         name: String,
     },
+
+    Up {},
+
+    Down {},
 }
